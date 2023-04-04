@@ -1,8 +1,44 @@
-stage('Python pytest Tests') {
-	dir('python/pytest') {
-		sh 'virtualenv -p /usr/bin/python3 venv'
-		sh 'source venv/bin/activate && pip install -r requirements.txt'
-		sh 'source venv/bin/activate && pytest --junit-xml=test_results.xml test || true'
-		junit keepLongStdio: true, allowEmptyResults: true, testResults: 'test_results.xml'
-	}
+def gv
+
+pipeline {
+    agent any
+    parameters {
+        choice(name: 'VERSION', choices: ['1.1.0', '1.2.0', '1.3.0'], description: '')
+        booleanParam(name: 'executeTests', defaultValue: true, description: '')
+    }
+    stages {
+        stage("init") {
+            steps {
+                script {
+                   gv = load "script.groovy" 
+                }
+            }
+        }
+        stage("build") {
+            steps {
+                script {
+                    gv.buildApp()
+                }
+            }
+        }
+        stage("test") {
+            when {
+                expression {
+                    params.executeTests
+                }
+            }
+            steps {
+                script {
+                    gv.testApp()
+                }
+            }
+        }
+        stage("deploy") {
+            steps {
+                script {
+                    gv.deployApp()
+                }
+            }
+        }
+    }   
 }

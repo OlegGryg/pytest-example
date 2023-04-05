@@ -1,5 +1,6 @@
 #pip freeze > requirements.txt -> https://note.nkmk.me/en/python-pip-install-requirements/
 
+allure-pytest==2.13.1
 async-generator==1.10
 atomicwrites==1.4.1
 attrs==22.2.0
